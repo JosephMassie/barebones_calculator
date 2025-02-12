@@ -1,0 +1,15 @@
+{
+  "originHash" : "95ac7f4de07385da8c76c17ca8a310b348a1341445d8210016bfdf6b93c4f0fb",
+  "pins" : [
+    {
+      "identity" : "vungleadssdk-swiftpackagemanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Vungle/VungleAdsSDK-SwiftPackageManager.git",
+      "state" : {
+        "revision" : "f2e059599dd6725b379675890c23591945ff433d",
+        "version" : "7.4.4"
+      }
+    }
+  ],
+  "version" : 3
+}
