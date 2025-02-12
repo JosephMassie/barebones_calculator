@@ -17,50 +17,50 @@ struct CalcBtn: Identifiable {
 
 var inputs: [[CalcBtn]] = [
     [
-        CalcBtn(title: "CL", backgroundColor: Color.buttonSecondary, textColor: Color.white),
-        CalcBtn(title: "X", backgroundColor: Color.buttonSecondary, textColor: Color.white),
-        CalcBtn(title: "/", backgroundColor: Color.buttonSecondary, textColor: Color.white),
-        CalcBtn(title: "-", backgroundColor: Color.buttonSecondary, textColor: Color.white),
+        CalcBtn(title: "CL", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
+        CalcBtn(title: "X", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
+        CalcBtn(title: "/", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
+        CalcBtn(title: "-", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
     ],
     [
-        CalcBtn(title: "7", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "8", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "9", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "+", backgroundColor: Color.buttonSecondary, textColor: Color.white),
+        CalcBtn(title: "7", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "8", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "9", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "+", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
     ],
     [
-        CalcBtn(title: "4", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "5", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "6", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "=", backgroundColor: Color.buttonSecondary, textColor: Color.white),
+        CalcBtn(title: "4", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "5", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "6", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "=", backgroundColor: Color.buttonSecondary, textColor: Color.buttonText),
     ],
     [
-        CalcBtn(title: "1", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "2", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "3", backgroundColor: Color.buttonPrimary, textColor: Color.white),
-        CalcBtn(title: "0", backgroundColor: Color.buttonPrimary, textColor: Color.white),
+        CalcBtn(title: "1", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "2", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "3", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
+        CalcBtn(title: "0", backgroundColor: Color.buttonPrimary, textColor: Color.buttonText),
         
     ]
 ];
 
 let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())];
+let emptyHistory = [["0"]]
 
 struct ButtonGrid: View {
     @Binding var output: [[String]]
     
     func processInput(_ input: String) -> Void {
-        print("procssing input \(input)")
         let methods: [String] = ["%", "X", "/", "+", "-"]
         
         if input == "CL" {
-            output = [[""]]
+            output = emptyHistory
         } else if input == "=" {
             let equation = output[0]
             var method: String? = nil
             var last = 0.0
             
             if equation.count % 2 == 0 || equation.count < 3 {
-                print("invalid equation \(equation.count)")
+                print("invalid equation \(equation.count), \(equation)")
                 return
             }
     
@@ -102,15 +102,12 @@ struct ButtonGrid: View {
             let cur = output[0]
             let end = cur.count - 1
             let last = cur.last!
-            print("checking \(cur) \(last) \(input)")
             
             if (last == "0" || last == "" || last == "NaN") && !methods.contains(input) {
-                print("is 0 replace")
                 // the current output is only zero and the input is not a modifier replace it
                 output[0][end] = input
             } else if methods.contains(last) {
                 if methods.contains(input) {
-                    print("both last and input are methods replace")
                     // the last entry is a method and the input is also a method replace it
                     output[0][end] = input
                 } else {
@@ -157,16 +154,29 @@ struct ResultsHistory: View {
     @Binding var output: [[String]]
 
     var body: some View {
-        List() {
-            ForEach(output.reversed(), id: \.self) { line in
-                Text(line.joined(separator: " "))
-            }
+        ScrollViewReader { scrollView in
+            ScrollView(.vertical) {
+                VStack(alignment: .trailing, spacing: 5) {
+                    ForEach(output.reversed(), id: \.self) { line in
+                        Text(line.joined(separator: " "))
+                            .font(.title)
+                            .lineLimit(/*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }.id("history").frame(maxWidth: .infinity)
+            }.onChange(of: output, initial: false, {
+                withAnimation {
+                    scrollView.scrollTo("history", anchor: .bottom)
+                }
+            }).frame(maxWidth: .infinity, minHeight: 100, maxHeight: 200)
+                .padding(.all, 10)
+                .background(Color.window)
         }
     }
 }
 
 struct ContentView: View {
-    @State public var output: [[String]] = [[""]];
+    @State public var output: [[String]] = emptyHistory
     
     var body: some View {
         VStack {
@@ -175,13 +185,14 @@ struct ContentView: View {
             Spacer()
             
             ResultsHistory(output: $output)
-            
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .background(RoundedRectangle(cornerRadius: 20).stroke(Color.black, lineWidth: 4))
-            .frame(height: 200)
-            .padding(.all)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .background(RoundedRectangle(cornerRadius: 20).stroke(Color.black, lineWidth: 4))
+                .padding(.all)
                 
-            ButtonGrid(output: $output).padding(.all)
+            ButtonGrid(output: $output)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .background(RoundedRectangle(cornerRadius: 20).stroke(Color.black, lineWidth: 4))
+                .padding(.all)
             
             Spacer()
         }
