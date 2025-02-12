@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0D9E80482D5C57870085DC5E /* VungleAdsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0D9E80472D5C57870085DC5E /* VungleAdsSDK */; };
+		0D9E805E2D5D32050085DC5E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0D9E805D2D5D32050085DC5E /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		0D9E80072D5C04360085DC5E /* calculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = calculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D9E80182D5C04370085DC5E /* calculatorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = calculatorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D9E80222D5C04380085DC5E /* calculatorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = calculatorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0D9E805D2D5D32050085DC5E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,6 +95,7 @@
 		0D9E7FFE2D5C04360085DC5E = {
 			isa = PBXGroup;
 			children = (
+				0D9E805D2D5D32050085DC5E /* PrivacyInfo.xcprivacy */,
 				0D9E80092D5C04360085DC5E /* calculator */,
 				0D9E801B2D5C04380085DC5E /* calculatorTests */,
 				0D9E80252D5C04380085DC5E /* calculatorUITests */,
@@ -242,6 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D9E805E2D5D32050085DC5E /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

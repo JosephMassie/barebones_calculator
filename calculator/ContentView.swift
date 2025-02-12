@@ -182,6 +182,11 @@ struct ContentView: View {
         VStack {
             Text("Barebones Calculator").font(.largeTitle).foregroundColor(.white).fontWeight(.bold)
             
+            BannerAdView(placementId: "BANNER04-8166553")
+                .frame(width: 320, height: 50)
+                .background(Color.white)
+                //.background(RoundedRectangle(cornerRadius: 20).fill(Color.gray))
+            
             Spacer()
             
             ResultsHistory(output: $output)
