@@ -56,8 +56,8 @@ struct ButtonGrid: View {
             output = emptyHistory
         } else if input == "=" {
             let equation = output[0]
-            var method: String? = nil
-            var last = 0.0
+            var curMethod: String? = nil
+            var result = 0.0
             
             if equation.count % 2 == 0 || equation.count < 3 {
                 print("invalid equation \(equation.count), \(equation)")
@@ -66,37 +66,37 @@ struct ButtonGrid: View {
     
             for piece in equation {
                 if methods.contains(piece) {
-                    method = piece
+                    curMethod = piece
                 } else {
-                    if method != nil {
-                        switch method {
+                    if curMethod != nil {
+                        switch curMethod {
                         case "%":
-                            last = last.truncatingRemainder(dividingBy: Double(piece)!)
+                            result = result.truncatingRemainder(dividingBy: Double(piece)!)
                         case "X":
-                            last *= Double(piece)!
+                            result *= Double(piece)!
                         case "/":
-                            last /= Double(piece)!
+                            result /= Double(piece)!
                         case "+":
-                            last += Double(piece)!
+                            result += Double(piece)!
                         case "-":
-                            last -= Double(piece)!
+                            result -= Double(piece)!
                         default:
-                            print("Unsupported operator: \(method!)")
+                            print("Unsupported operator: \(curMethod!)")
                         }
                         // reset method
-                        method = nil
+                        curMethod = nil
                     } else {
-                        last = Double(piece)!
+                        result = Double(piece)!
                     }
                 }
             }
             
-            let format = NumberFormatter()
-            format.minimumFractionDigits = 0
-            format.maximumFractionDigits = 10
-            let result = format.string(from: NSNumber(value: last)) ?? ""
-            output.insert(["= " + result], at: 0)
-            output.insert([result], at: 0)
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 0
+            formatter.maximumFractionDigits = 10
+            let newOutput = formatter.string(from: NSNumber(value: result)) ?? ""
+            output.insert(["= " + newOutput], at: 0)
+            output.insert([newOutput], at: 0)
             
         } else {
             let cur = output[0]
@@ -104,20 +104,30 @@ struct ButtonGrid: View {
             let last = cur.last!
             
             if (last == "0" || last == "" || last == "NaN") && !methods.contains(input) {
-                // the current output is only zero and the input is not a modifier replace it
+                /* When the current line is a lone "0", blank, or NaN output from a previous run
+                 replace it with new input
+                 */
                 output[0][end] = input
             } else if methods.contains(last) {
                 if methods.contains(input) {
-                    // the last entry is a method and the input is also a method replace it
+                    /* The last entry in the current line is also a method replace it with the
+                     new method input
+                     */
                     output[0][end] = input
                 } else {
-                    // last entry is a method but input is a number add it to the queue
+                    /* The last entry is a method and the input is a number start a new
+                     entry in the current line and set it to the number input
+                     */
                     output[0].append(input)
                 }
             } else {
                 if methods.contains(input) {
+                    /* The last entry is a number and the input is a method start a new
+                     entry in the currentry line and set it to the method input */
                     output[0].append(input)
                 } else {
+                    /* The last entry is a number and the input is also a number
+                     concat the number input onto the existing entry */
                     output[0][end] += input
                 }
             }
@@ -180,12 +190,12 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("Barebones Calculator").font(.largeTitle).foregroundColor(.white).fontWeight(.bold)
+            Text("Barebones Calculator").font(.largeTitle.bold()).foregroundColor(.white)
             
             BannerAdView(placementId: "BANNER04-8166553")
                 .frame(width: 320, height: 50)
                 .background(Color.white)
-                //.background(RoundedRectangle(cornerRadius: 20).fill(Color.gray))
+            
             
             Spacer()
             

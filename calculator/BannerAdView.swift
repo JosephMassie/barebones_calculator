@@ -12,6 +12,7 @@ enum BannerState {
     case idle
     case loading
     case loaded
+    case presenting
     case presented
     case failed
 }
@@ -26,10 +27,14 @@ struct BannerAdView: UIViewRepresentable {
         self.bannerAd = VungleBanner(placementId: placementId, size: BannerSize.regular)
     }
     
+    /* Helper method to encapsulate the loading, presenting,
+    and keep the current state in alignment */
     func setupAd(view: UIView) {
         if state == .idle {
+            state = .loading
             bannerAd.load()
         } else if state == .loaded {
+            state = .presenting
             bannerAd.present(on: view)
         }
     }
@@ -39,12 +44,16 @@ struct BannerAdView: UIViewRepresentable {
         view.frame = CGRect(x: 0, y: 0, width: 320, height: 50)
         bannerAd.delegate = context.coordinator
         
+        /* The VungleSDK is likely not ready immediately when the UI is
+         initially rendered so we poll for it if isn't
+         */
         if VungleAds.isInitialized() {
             setupAd(view: view)
         } else {
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
                 if VungleAds.isInitialized() {
                     setupAd(view: view)
+                    // when the Ad has either failed to load/setup or is successfully presented quit
                     if state == .failed || state == .presented {
                         timer.invalidate()
                     }
